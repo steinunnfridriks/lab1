@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vxml version="2.1" xmlns="http://www.w3.org/2001/vxml"
+      xmlns:voxeo="http://community.voxeo.com/xmlns/vxml">
+  <nomatch>
+    I didn't understand.
+    <reprompt/>
+  </nomatch>
+
+  <noinput>
+    You didn't say anything.
+    <reprompt/>
+  </noinput>
+
+  <!-- Data model -->
+  <var name="from" />
+  <var name="to" />
+
+  <!-- State machine -->
+  <form id="welcome">
+    <block>
+      <prompt>
+        <break time="3600" />
+        Welcome to the flight booking service.
+      </prompt>
+      <goto next="#askFrom" />
+    </block>
+  </form>
+
+  <form id="askFrom">
+    <field name="fromField">
+      <prompt>
+        From which city are you leaving? London, Paris or New York?
+      </prompt>
+      <option>london</option>
+      <option>paris</option>
+      <option>new york</option>
+    <filled>
+      <nomatch>
+        Sorry, the city you selected is not available.
+        <reprompt/>
+      </nomatch>
+      </filled>
+      <assign name="from" expr="fromField" />
+      <filled>
+        <prompt> You are leaving from <value expr="fromField"> </prompt>
+      </filled>
+    </field>
+    <filled>
+      <goto next="#askTo" />
+    </filled>
+  </form>
+
+  <form id="askTo">
+    <field name="toField">
+      <prompt>
+        To which city are you going?
+      </prompt>
+      <option>london</option>
+      <option>paris</option>
+      <option>new york</option>
+      <filled>
+        <nomatch>
+          Sorry, the city you selected is not available.
+          <reprompt/>
+        </nomatch>
+        </filled>
+        <assign name="to" expr="toField" />
+        <filled>
+          <prompt> You are travelling to <value expr="toField"> </prompt>
+        </filled>
+    </field>
+    <filled>
+      <goto next="#askDate" />
+    </filled>
+  </form>
+
+  <form id="askDate">
+    <field name="dateField">
+      <prompt>
+        What is the date of your departure?
+      </prompt>
+      <option>Monday</option>
+      <option>Tuesday</option>
+      <option>Wednesday</option>
+      <option>Thursday</option>
+      <option>Friday</option>
+      <option>Saturday</option>
+      <option>Sunday</option>
+      <filled>
+        <nomatch>
+          Sorry, this is not a valid date. Please select a weekday.
+          <reprompt/>
+        </nomatch>
+        </filled>
+        <assign name="date" expr="dateField" />
+        <filled>
+          <prompt> You are travelling on <value expr="dateField"> </prompt>
+        </filled>
+    </field>
+    <filled>
+      <goto next="#askOneway" />
+    </filled>
+  </form>
+
+  <form id="askOneway">
+    <field name="onewayField">
+      <prompt>
+        Is this a one way trip?
+      </prompt>
+      <option>No</option>
+      <option>Yes</option>
+
+      <if cond="Yes">
+          <prompt> So you are travelling from <value expr="fromField"> to <value expr="toField"> on <value expr="dateField">. Is this correct? </prompt>
+          <if cond="Yes">
+          <prompt> Great. Your flight has been booked. Thank you for using the flight booking service </promt>
+          <else />
+          <promt> Please call again. </promt>
+        </if>
+      <else />
+          <goto next="#askReturn" />
+      </if>
+    </field>
+  </form>
+
+      <form id="askReturn">
+        <field name="returndateField">
+          <prompt>
+            What is the date of your return flight?
+          </prompt>
+          <option>Monday</option>
+          <option>Tuesday</option>
+          <option>Wednesday</option>
+          <option>Thursday</option>
+          <option>Friday</option>
+          <option>Saturday</option>
+          <option>Sunday</option>
+          <filled>
+            <nomatch>
+              Sorry, this is not a valid date. Please select a weekday.
+              <reprompt/>
+            </nomatch>
+            </filled>
+            <assign name="date" expr="dateField" />
+            <filled>
+              <prompt> You are returning from <value expr="toField" to "fromField" on <value expr="returndateField">. Is this correct? </prompt>
+            </filled>
+            <if cond="Yes">
+                <prompt> Great. Your flight has been booked. Thank you for using the flight booking service. </prompt>
+            <else />
+            <prompt> Please try again. </prompt>
+                <goto next="#askReturn" />
+            </if>
+        </field>
+      </form>
+
+</vxml>
